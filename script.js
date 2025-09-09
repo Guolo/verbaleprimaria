@@ -1,4 +1,4 @@
-let contatoreArgomenti = 0;l
+let contatoreArgomenti = 0;
 
 // -------- Partecipanti --------
 
