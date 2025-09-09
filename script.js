@@ -415,20 +415,192 @@ async function stampaVerbale() {
     doc.save(`Verbale_seduta_${numeroSeduta || 'senza_numero'}.pdf`);
 }
 
+// -----------------------------
+// Salvataggio su localStorage
+// -----------------------------
+function salvaDati() {
+    try {
+        const dati = {
+            numeroSeduta: document.getElementById('numeroSeduta').value || '',
+            classe: document.getElementById('classe').value || '',
+            dataRiunione: document.getElementById('dataRiunione').value || '',
+            oraInizio: document.getElementById('oraInizio').value || '',
+            oraFine: document.getElementById('oraFine').value || '',
+            presidente: document.getElementById('presidente').value || '',
+            segretario: document.getElementById('segretario').value || '',
+
+            docentiPresenti: [...document.querySelectorAll('#docentiList span')].map(s => s.textContent),
+            genitoriPresenti: [...document.querySelectorAll('#genitoriList span')].map(s => s.textContent),
+            docentiAssenti: [...document.querySelectorAll('#docentiAssentiList span')].map(s => s.textContent),
+            genitoriAssenti: [...document.querySelectorAll('#genitoriAssentiList span')].map(s => s.textContent),
+
+            // ordine del giorno: titolo, descrizione, id, collapsed
+            argomenti: [...document.querySelectorAll('#agendaContainer .agenda-item')].map(item => ({
+                id: item.dataset.id || (Date.now() + Math.random()).toString(),
+                titolo: item.querySelector('input[type="text"]')?.value || '',
+                descrizione: item.querySelector('textarea')?.value || '',
+                collapsed: item.querySelector('.agenda-content')?.style.display === 'none'
+            })),
+
+            // svolgimenti (collegati tramite lo stesso data-id)
+            svolgimenti: [...document.querySelectorAll('#svolgimentoContainer .agenda-item')].map(item => ({
+                id: item.dataset.id,
+                sintesi: item.querySelector('textarea.sintesi')?.value || '',
+                decisioni: item.querySelector('textarea.decisioni')?.value || ''
+            })),
+
+            varieSintesi: document.getElementById('varieSintesi').value || '',
+            varieDecisioni: document.getElementById('varieDecisioni').value || '',
+            varieAllegati: document.getElementById('varieAllegati').value || ''
+        };
+
+        localStorage.setItem('verbaleConsiglio_v1', JSON.stringify(dati));
+        // console.log('Salvato localStorage', dati);
+    } catch (e) {
+        console.warn('Errore salvataggio localStorage', e);
+    }
+}
+
+// debounce minimo per evitare troppi scritti su localStorage
+function debounce(fn, wait = 250) {
+    let t = null;
+    return function(...args) {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), wait);
+    };
+}
+const debouncedSave = debounce(salvaDati, 300);
+
+
+// -----------------------------
+// Caricamento da localStorage
+// -----------------------------
+function caricaDati() {
+    try {
+        const raw = localStorage.getItem('verbaleConsiglio_v1');
+        if (!raw) return false;
+        const dati = JSON.parse(raw);
+        if (!dati || Object.keys(dati).length === 0) return false;
+
+        // campi generali
+        document.getElementById('numeroSeduta').value = dati.numeroSeduta || '';
+        document.getElementById('classe').value = dati.classe || '';
+        document.getElementById('dataRiunione').value = dati.dataRiunione || '';
+        document.getElementById('oraInizio').value = dati.oraInizio || '';
+        document.getElementById('oraFine').value = dati.oraFine || '';
+        document.getElementById('presidente').value = dati.presidente || '';
+        document.getElementById('segretario').value = dati.segretario || '';
+
+        // helper per ripristinare liste partecipanti
+        function ripristinaLista(idLista, arr) {
+            const lista = document.getElementById(idLista);
+            lista.innerHTML = '';
+            (arr || []).forEach(nome => {
+                const div = document.createElement('div');
+                div.className = 'participant-item';
+                div.innerHTML = `<span>${nome}</span>
+                    <button class="btn btn-small" onclick="this.parentElement.remove(); salvaDati()" style="margin-left:auto;">Rimuovi</button>`;
+                lista.appendChild(div);
+            });
+        }
+        ripristinaLista('docentiList', dati.docentiPresenti);
+        ripristinaLista('genitoriList', dati.genitoriPresenti);
+        ripristinaLista('docentiAssentiList', dati.docentiAssenti);
+        ripristinaLista('genitoriAssentiList', dati.genitoriAssenti);
+
+        // ripristino ordine del giorno
+        const agenda = document.getElementById('agendaContainer');
+        agenda.innerHTML = '';
+        contatoreArgomenti = 0;
+        (dati.argomenti || []).forEach(a => {
+            contatoreArgomenti++;
+            const div = document.createElement('div');
+            div.className = 'agenda-item';
+            div.dataset.id = a.id || (Date.now() + Math.random()).toString();
+            div.innerHTML = `
+                <div class="agenda-header">
+                    <div style="display: flex; align-items: center; flex: 1; margin-right: 5px !important;">
+                        <div class="agenda-number">${contatoreArgomenti}</div>
+                        <input type="text" placeholder="Titolo argomento..." style="flex: 1;" onchange="aggiornaSezioneSvolgimento()" value="${(a.titolo||'').replace(/"/g,'&quot;')}">
+                    </div>
+                    <div>
+                        <button class="btn btn-small" onclick="toggleArgomento(this)">${a.collapsed ? '▶' : '▼'}</button>
+                        <button class="btn btn-small" onclick="rimuoviArgomento(this)">Rimuovi</button>
+                    </div>
+                </div>
+                <div class="agenda-content" style="${a.collapsed ? 'display:none;' : ''}">
+                    <textarea placeholder="Descrizione dettagliata dell'argomento..." style="margin-top: 10px;">${(a.descrizione||'')}</textarea>
+                </div>
+            `;
+            agenda.appendChild(div);
+        });
+
+        // ricostruisci sezione svolgimento (crea gli elementi)
+        aggiornaSezioneSvolgimento();
+
+        // ripristina contenuti svolgimento
+        (dati.svolgimenti || []).forEach(s => {
+            const item = document.querySelector(`#svolgimentoContainer .agenda-item[data-id="${s.id}"]`);
+            if (item) {
+                const sint = item.querySelector('textarea.sintesi');
+                const dec = item.querySelector('textarea.decisioni');
+                if (sint) sint.value = s.sintesi || '';
+                if (dec) dec.value = s.decisioni || '';
+            }
+        });
+
+        // varie ed eventuali
+        document.getElementById('varieSintesi').value = dati.varieSintesi || '';
+        document.getElementById('varieDecisioni').value = dati.varieDecisioni || '';
+        document.getElementById('varieAllegati').value = dati.varieAllegati || '';
+
+        // aggiorna numerazione (in caso)
+        rinumeraArgomenti?.();
+        return true;
+    } catch (e) {
+        console.warn('Errore caricamento localStorage', e);
+        return false;
+    }
+}
+
+
 // -------- Inizializzazione --------
 document.addEventListener('DOMContentLoaded', function() {
+    // carica da localStorage (se presente) PRIMA di aggiungere argomenti di default
+    const loaded = caricaDati();
+
+    // mantenere il comportamento che ricostruisce svolgimenti quando si modifica un titolo
     document.addEventListener('input', function(e) {
         if (e.target.closest('.agenda-item') && e.target.type === 'text') {
             aggiornaSezioneSvolgimento();
         }
+        // salva debounced su ogni input
+        debouncedSave();
     });
 
-    // Aggiungo 2 argomenti di default
-    aggiungiArgomento();
-    document.querySelector('.agenda-item input[type="text"]').value = 'Verifica situazione didattica della classe';
+    // salva quando si cliccano i pulsanti (aggiungi/rimuovi)
+    document.body.addEventListener('click', function(e) {
+        if (e.target.closest('.btn')) {
+            // le tue funzioni di aggiunta/rimozione già eseguiranno le modifiche;
+            // qui salviamo (debounced) per sicurezza
+            debouncedSave();
+        }
+    });
 
-    aggiungiArgomento();
-    document.querySelector('.agenda-item:last-child input[type="text"]').value = 'Programmazione attività future';
+    // se non abbiamo nulla nel localStorage, creiamo i 2 argomenti di default (comportamento originale)
+    if (!loaded) {
+        aggiungiArgomento();
+        document.querySelector('.agenda-item input[type="text"]').value = 'Verifica situazione didattica della classe';
 
-    aggiornaSezioneSvolgimento();
+        aggiungiArgomento();
+        document.querySelector('.agenda-item:last-child input[type="text"]').value = 'Programmazione attività future';
+
+        aggiornaSezioneSvolgimento();
+        // salva iniziale
+        salvaDati();
+    } else {
+        // se abbiamo caricato, assicurarsi che la sezione svolgimento sia aggiornata e salvare lo stato caricato (utile per aggiornare eventuali id)
+        aggiornaSezioneSvolgimento();
+        salvaDati();
+    }
 });
