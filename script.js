@@ -204,6 +204,14 @@ async function stampaVerbale() {
 
     let y = imgHeight + 20; // spazio dopo intestazione
 
+    // --- Controlla se serve una nuova pagina ---
+    function checkPageBreak(nextLineHeight) {
+        if (y + nextLineHeight > pageHeight - footerMargin) {
+            doc.addPage();
+            y = 20; // riparte dall’alto della nuova pagina
+        }
+    }
+
     // --- Helper per aggiungere testo con gestione cambio pagina ---
     function addText(text, x = 15, lineHeight = 6, maxWidth = 175) {
         const lines = doc.splitTextToSize(text, maxWidth);
@@ -217,6 +225,54 @@ async function stampaVerbale() {
         });
         y += 2; // spazio tra blocchi
     }
+
+    // --- Testo giustificato ---
+    function addJustifiedText(text, x = 15, lineHeight = 6, maxWidth = 175) {
+        const words = text.split(/\s+/);
+        let line = [];
+
+        words.forEach((word) => {
+            const testLine = [...line, word].join(" ");
+            const testWidth = doc.getTextWidth(testLine);
+
+            if (testWidth > maxWidth && line.length > 0) {
+                stampaRiga(line, x, lineHeight, maxWidth);
+                line = [word];
+            } else {
+                line.push(word);
+            }
+        });
+
+        // Ultima riga (non giustificata)
+        if (line.length > 0) {
+            checkPageBreak(lineHeight);
+            doc.text(line.join(" "), x, y);
+            y += lineHeight;
+        }
+
+        y += 2; // spazio extra tra paragrafi
+    }
+
+    // --- Stampa una riga giustificata ---
+    function stampaRiga(line, x, lineHeight, maxWidth) {
+        checkPageBreak(lineHeight);
+
+        const spaceCount = line.length - 1;
+        if (spaceCount > 0) {
+            const extraSpace = (maxWidth - doc.getTextWidth(line.join(" "))) / spaceCount;
+            let cursorX = x;
+            line.forEach((w, i) => {
+                doc.text(w, cursorX, y);
+                if (i < line.length - 1) {
+                    cursorX += doc.getTextWidth(w + " ") + extraSpace;
+                }
+            });
+        } else {
+            doc.text(line[0], x, y);
+        }
+        y += lineHeight;
+    }
+
 
     // --- Recupero dati ---
     const numeroSeduta = document.getElementById('numeroSeduta').value || '';
@@ -265,7 +321,7 @@ async function stampaVerbale() {
 
     addText(`Il giorno ${dataRiunione} dalle ore ${oraInizio} alle ore ${oraFine} si è riunito il consiglio della classe ${classe} per la trattazione dell'ordine del giorno:`);
 
-    argomenti.forEach((a, i) => addText(`${i + 1}) ${a.titolo}`, 15));
+    argomenti.forEach((a, i) => addText(`${i + 1}) ${a.titolo}`, 20));
 
     addText(`Sono presenti gli insegnanti: ${docentiPresenti}`);
     addText(`e i genitori: ${genitoriPresenti}`);
@@ -283,7 +339,7 @@ async function stampaVerbale() {
     doc.setFontSize(12);
     argomenti.forEach((a, i) => {
         addText(`${i + 1}) ${a.titolo}`, 15);
-        if (a.descrizione) addText(a.descrizione, 20);
+        if (a.descrizione) addJustifiedText(a.descrizione, 20);
     });
 
     // --- Svolgimento e Decisioni ---
@@ -297,11 +353,11 @@ async function stampaVerbale() {
         addText(`${i + 1}) ${s.titolo}`, 15);
         if (s.sintesi) {
             addText("Sintesi:", 20);
-            addText(s.sintesi, 25);
+            addJustifiedText(s.sintesi, 25);
         }
         if (s.decisioni) {
             addText("Decisioni/Delibere:", 20);
-            addText(s.decisioni, 25);
+            addJustifiedText(s.decisioni, 25);
         }
     });
 
@@ -313,8 +369,8 @@ async function stampaVerbale() {
         addText("Varie ed Eventuali:");
         doc.setFont("helvetica", "normal");
         doc.setFontSize(12);
-        if (varieSintesi) { addText("Sintesi:", 20); addText(varieSintesi, 25); }
-        if (varieDecisioni) { addText("Decisioni/Delibere:", 20); addText(varieDecisioni, 25); }
+        if (varieSintesi) { addText("Sintesi:", 20); addJustifiedText(varieSintesi, 25); }
+        if (varieDecisioni) { addText("Decisioni/Delibere:", 20); addJustifiedText(varieDecisioni, 25); }
         if (varieAllegati) { addText("Allegati:", 20); addText(varieAllegati, 25); }
     }
 
