@@ -358,7 +358,7 @@ async function stampaVerbale() {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(12);
 
-    addText(`Il giorno ${dataRiunione} dalle ore ${oraInizio} alle ore ${oraFine} si è riunito il consiglio della classe ${classe} per la trattazione dell'ordine del giorno:`);
+    addText(`Il giorno ${dataRiunione} alle ore ${oraInizio} si è riunito il consiglio della classe ${classe} per la trattazione dell'ordine del giorno:`);
 
     argomenti.forEach((a, i) => addText(`${i + 1}) ${a.titolo}`, 20));
 
@@ -399,6 +399,11 @@ async function stampaVerbale() {
             addJustifiedText(s.decisioni, 25);
         }
     });
+
+    //Conclusione
+    y += 6;
+    addText(`Esauriti i punti all'ordine del giorno viene tolta la seduta alle ore ${oraFine}.`);
+    addText(`Letto, confermato e sottoscritto.`);
 
     // --- Varie ed Eventuali ---
     y += 6;
