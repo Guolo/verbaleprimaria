@@ -253,6 +253,45 @@ async function stampaVerbale() {
         y += 2; // spazio extra tra paragrafi
     }
 
+    // --- Testo con rispetto degli a capo (solo per Allegati) ---
+    function addTextWithNewlines(text, x = 15, lineHeight = 6, maxWidth = 175) {
+        text = text == null ? '' : String(text);
+        const paragraphs = text.split(/\r\n|\r|\n/);
+
+        paragraphs.forEach((para, idx) => {
+            if (!para) {
+                // riga vuota
+                checkPageBreak(lineHeight);
+                y += lineHeight;
+            } else {
+                const words = para.split(/\s+/);
+                let line = [];
+
+                words.forEach((word) => {
+                    const testLine = [...line, word].join(" ");
+                    const testWidth = doc.getTextWidth(testLine);
+
+                    if (testWidth > maxWidth && line.length > 0) {
+                        stampaRiga(line, x, lineHeight, maxWidth);
+                        line = [word];
+                    } else {
+                        line.push(word);
+                    }
+                });
+
+                // ultima riga del paragrafo
+                if (line.length > 0) {
+                    checkPageBreak(lineHeight);
+                    doc.text(line.join(" "), x, y);
+                    y += lineHeight;
+                }
+            }
+            // spazio extra solo tra paragrafi
+            if (idx < paragraphs.length - 1) y += 2;
+        });
+    }
+
+
     // --- Stampa una riga giustificata ---
     function stampaRiga(line, x, lineHeight, maxWidth) {
         checkPageBreak(lineHeight);
@@ -371,7 +410,7 @@ async function stampaVerbale() {
         doc.setFontSize(12);
         if (varieSintesi) { addText("Sintesi:", 20); addJustifiedText(varieSintesi, 25); }
         if (varieDecisioni) { addText("Decisioni/Delibere:", 20); addJustifiedText(varieDecisioni, 25); }
-        if (varieAllegati) { addText("Allegati:", 20); addText(varieAllegati, 25); }
+        if (varieAllegati) { addText("Allegati:", 20); addTextWithNewlines(varieAllegati, 25); }
     }
 
     // --- Sezione firme (blocco indivisibile) ---
@@ -603,4 +642,53 @@ document.addEventListener('DOMContentLoaded', function() {
         aggiornaSezioneSvolgimento();
         salvaDati();
     }
+    const logo = document.querySelector('.logo');
+    let clickCount = 0;
+    let clickTimer = null;
+
+    logo.addEventListener('click', () => {
+        clickCount++;
+
+        // Resetta il contatore dopo 1 secondo dall'ultimo click
+        clearTimeout(clickTimer);
+        clickTimer = setTimeout(() => {
+            clickCount = 0;
+        }, 1000);
+
+        if (clickCount >= 5) {
+            clickCount = 0; // resetta il contatore
+            mostraClearBtn();
+        }
+    });
+
+    function mostraClearBtn() {
+        let clearBtn = document.getElementById('clearStorageBtn');
+        if (!clearBtn) {
+            clearBtn = document.createElement('button');
+            clearBtn.id = 'clearStorageBtn';
+            clearBtn.textContent = 'Svuota Local Storage';
+            clearBtn.style.position = 'fixed';
+            clearBtn.style.bottom = '10px';
+            clearBtn.style.right = '10px';
+            clearBtn.style.zIndex = '1000';
+            clearBtn.style.padding = '8px 12px';
+            clearBtn.style.backgroundColor = '#7b0f14';
+            clearBtn.style.color = 'white';
+            clearBtn.style.border = 'none';
+            clearBtn.style.borderRadius = '6px';
+            clearBtn.style.cursor = 'pointer';
+            document.body.appendChild(clearBtn);
+
+            clearBtn.addEventListener('click', () => {
+                if (confirm("Sei sicuro di voler svuotare tutto il localStorage?")) {
+                    localStorage.clear();
+                    location.reload();
+                }
+            });
+        }
+
+        clearBtn.style.display = 'block';
+        clearBtn.focus();
+    }
+
 });
