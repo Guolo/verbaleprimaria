@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verbale Consiglio di Classe - Scuola Primaria</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="header">
+      <img src="img/logo.png" alt="Logo Istituto Clesio" class="logo">
+      <div>
+          <h1>VERBALE DEL CONSIGLIO DI CLASSE</h1>
+          <p style="margin: 0; font-size: 16px;">Scuola Primaria</p>
+      </div>
+    </div>
+
+    <!-- Dati Generali -->
+    <div class="section">
+        <h2>📋 Dati Generali</h2>
+        <div class="form-row">
+            <div class="form-group small">
+                <label for="numeroSeduta">Numero Seduta</label>
+                <input type="number" id="numeroSeduta" name="numeroSeduta" min="1">
+            </div>
+            <div class="form-group">
+                <label for="classe">Classe</label>
+                <input type="text" id="classe" name="classe">
+            </div>
+            <div class="form-group">
+                <label for="dataRiunione">Data Riunione</label>
+                <input type="date" id="dataRiunione" name="dataRiunione">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group medium">
+                <label for="oraInizio">Ora Inizio</label>
+                <input type="time" id="oraInizio" name="oraInizio">
+            </div>
+            <div class="form-group medium">
+                <label for="oraFine">Ora Fine</label>
+                <input type="time" id="oraFine" name="oraFine">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="presidente">Presidente</label>
+                <input type="text" id="presidente" name="presidente" placeholder="Nome e cognome del presidente">
+            </div>
+            <div class="form-group">
+                <label for="segretario">Segretario Verbalizzante</label>
+                <input type="text" id="segretario" name="segretario" placeholder="Nome e cognome del segretario">
+            </div>
+        </div>
+    </div>
+
+    <!-- Partecipanti -->
+    <div class="section">
+        <h2>👥 Partecipanti</h2>
+        <div class="participants-section">
+            <!-- Docenti Presenti -->
+            <div>
+                <h3 class="subtitle">Docenti Presenti</h3>
+                <div class="participant-list" id="docentiList"></div>
+                <div class="add-participant">
+                    <input type="text" id="nuovoDocente" placeholder="Nome e cognome docente">
+                    <button class="btn btn-small" onclick="aggiungiDocente()">+ Aggiungi</button>
+                </div>
+            </div>
+
+            <!-- Genitori Presenti -->
+            <div>
+                <h3 class="subtitle">Genitori Presenti</h3>
+                <div class="participant-list" id="genitoriList"></div>
+                <div class="add-participant">
+                    <input type="text" id="nuovoGenitore" placeholder="Nome e cognome genitore">
+                    <button class="btn btn-small" onclick="aggiungiGenitore()">+ Aggiungi</button>
+                </div>
+            </div>
+
+            <!-- Docenti Assenti -->
+            <div>
+                <h3 class="subtitle">Docenti Assenti</h3>
+                <div class="participant-list" id="docentiAssentiList"></div>
+                <div class="add-participant">
+                    <input type="text" id="nuovoDocenteAssente" placeholder="Nome e cognome docente assente">
+                    <button class="btn btn-small" onclick="aggiungiDocenteAssente()">+ Aggiungi</button>
+                </div>
+            </div>
+
+            <!-- Genitori Assenti -->
+            <div>
+                <h3 class="subtitle">Genitori Assenti</h3>
+                <div class="participant-list" id="genitoriAssentiList"></div>
+                <div class="add-participant">
+                    <input type="text" id="nuovoGenitoreAssente" placeholder="Nome e cognome genitore assente">
+                    <button class="btn btn-small" onclick="aggiungiGenitoreAssente()">+ Aggiungi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ordine del Giorno -->
+    <div class="section">
+        <h2>📝 Ordine del Giorno</h2>
+        <div id="agendaContainer"></div>
+        <button class="btn" onclick="aggiungiArgomento()">+ Aggiungi Argomento</button>
+    </div>
+
+    <!-- Svolgimento e Decisioni -->
+    <div class="section">
+        <h2>💬 Svolgimento e Decisioni</h2>
+        <div id="svolgimentoContainer"></div>
+    </div>
+
+    <!-- Varie ed Eventuali -->
+    <div class="section">
+        <h2>📌 Varie ed Eventuali</h2>
+        <div class="form-group">
+            <label for="varieSintesi">Sintesi Discussione</label>
+            <textarea id="varieSintesi" name="varieSintesi" placeholder="Riassunto della discussione..."></textarea>
+        </div>
+        <div class="form-group">
+            <label for="varieDecisioni">Decisioni Assunte</label>
+            <textarea id="varieDecisioni" name="varieDecisioni" placeholder="Decisioni assunte o delibere approvate..."></textarea>
+        </div>
+        <div class="form-group">
+            <label for="varieAllegati">Allegati</label>
+            <textarea id="varieAllegati" name="varieAllegati" placeholder="Elenco degli allegati da inserire nel verbale cartaceo"></textarea>
+        </div>
+    </div>
+
+    <button class="print-btn" onclick="stampaVerbale()">🖨️ Stampa/Salva PDF</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="img/headerImage.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

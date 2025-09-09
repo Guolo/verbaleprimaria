@@ -1,0 +1,291 @@
+/* ----------- BASE ----------- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+    color: #222;
+    line-height: 1.5;
+}
+
+/* ----------- HEADER ----------- */
+.header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: linear-gradient(135deg, #ffffff 0%, #7b0f14 70%);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 25px rgba(123, 15, 20, 0.3);
+}
+
+.header div {
+    width: 100%;
+    text-align: center;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.logo {
+    height: 70px;
+    width: auto;
+}
+
+/* ----------- SEZIONI ----------- */
+.section {
+    background: white;
+    margin-bottom: 25px;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border-left: 4px solid #7b0f14;
+}
+
+.section h2 {
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.subtitle {
+    color: #555;
+    margin-bottom: 15px;
+}
+
+/* ----------- FORM ----------- */
+.form-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.form-group {
+    flex: 1;
+}
+
+.form-group.small {
+    flex: 0.3;
+}
+
+.form-group.medium {
+    flex: 0.5;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #444;
+    font-size: 14px;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: #7b0f14;
+    box-shadow: 0 0 0 3px rgba(123, 15, 20, 0.15);
+}
+
+::placeholder {
+    color: #aaa;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* ----------- PARTECIPANTI ----------- */
+.participants-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.participant-list {
+    background: #fdfdfd;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.participant-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.add-participant {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.add-participant input {
+    flex: 1;
+}
+
+/* ----------- PULSANTI ----------- */
+.btn {
+    background: #7b0f14;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    background: #a5282c;
+    transform: translateY(-1px);
+}
+
+.btn:focus {
+    outline: 2px solid #333;
+    outline-offset: 2px;
+}
+
+.btn-small {
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+/* ----------- AGENDA ----------- */
+.agenda-item {
+    background: #fdfdfd;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 3px solid #7b0f14;
+}
+
+.agenda-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    justify-content: space-between;
+}
+
+.agenda-number {
+    background: #7b0f14;
+    color: white;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+    margin-right: 10px;
+}
+
+/* ----------- PULSANTE STAMPA ----------- */
+.print-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.print-btn:hover {
+    background: #218838;
+    transform: translateY(-2px);
+}
+
+.print-btn:focus {
+    outline: 2px solid #333;
+    outline-offset: 2px;
+}
+
+/* ----------- FIRME ----------- */
+.signature-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* ----------- STAMPA ----------- */
+@media print {
+    body {
+        background: white;
+        margin: 0;
+        padding: 15px;
+        font-size: 12pt;
+        color: black;
+    }
+
+    .print-btn, .btn {
+        display: none !important;
+    }
+
+    .section {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        margin-bottom: 15px;
+        page-break-inside: avoid;
+    }
+
+    .header {
+        background: #7b0f14 !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact;
+    }
+
+    h1, h2, h3 {
+        color: black !important;
+    }
+}
+
+/* ----------- RESPONSIVE ----------- */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+    }
+
+    .participants-section {
+        grid-template-columns: 1fr;
+    }
+
+    .signature-section {
+        grid-template-columns: 1fr;
+    }
+
+    .print-btn {
+        bottom: 20px;
+        right: 20px;
+        padding: 10px 15px;
+    }
+}
