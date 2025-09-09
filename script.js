@@ -400,11 +400,6 @@ async function stampaVerbale() {
         }
     });
 
-    //Conclusione
-    y += 6;
-    addText(`Esauriti i punti all'ordine del giorno viene tolta la seduta alle ore ${oraFine}.`);
-    addText(`Letto, confermato e sottoscritto.`);
-
     // --- Varie ed Eventuali ---
     y += 6;
     if (varieSintesi || varieDecisioni || varieAllegati) {
@@ -417,6 +412,24 @@ async function stampaVerbale() {
         if (varieDecisioni) { addText("Decisioni/Delibere:", 20); addJustifiedText(varieDecisioni, 25); }
         if (varieAllegati) { addText("Allegati:", 20); addTextWithNewlines(varieAllegati, 25); }
     }
+
+    // --- Sezione Conclusione (blocco indivisibile) ---
+    y += 6;
+    let conclusione1 = `Esauriti i punti all'ordine del giorno viene tolta la seduta alle ore ${oraFine}.`;
+    let conclusione2 = `Letto, confermato e sottoscritto.`;
+    let blockHeight = 6 * 2 + 4; // 2 righe con lineHeight=6 + un margine extra
+
+    // Controllo se c'è abbastanza spazio nella pagina
+    if (y + blockHeight > pageHeight - footerMargin) {
+        doc.addPage();
+        y = 20; // reset margine top per nuova pagina
+    }
+
+    let conclusione1Width = doc.getTextWidth(conclusione1);
+    doc.text(conclusione1, (pageWidth - conclusione1Width) / 2, y);
+    y += 6;
+    let conclusione2Width = doc.getTextWidth(conclusione2);
+    doc.text(conclusione2, (pageWidth - conclusione2Width) / 2, y);
 
     // --- Sezione firme (blocco indivisibile) ---
     y += 20;
