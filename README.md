@@ -13,10 +13,10 @@
     for a School in Italy
   </span>
 </h1>
-<p>A simple project to generate and print a meeting report in PDF for a school institution.</p>
+<p>A simple project to create and print meeting minutes in PDF for a school institution.</p>
 <br>
 
 <img width="957" height="517" alt="Screenshot 2025-09-10 alle 08 08 28" src="https://github.com/user-attachments/assets/0059842c-49dd-4ed1-8d81-24fd71c9874b" />
 <br>
 <p><br>https://verbaleprimaria.iccles.it</p>
-<p>Press LOGO 5 times to clear the cache.</p>
+<p>Press the LOGO 5 times to clear the cache.</p>
