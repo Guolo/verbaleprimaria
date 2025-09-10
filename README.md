@@ -10,10 +10,10 @@
   ">
   Generate PDF Meeting Report
   <span style="display:block; color:#7b0f14; font-weight:900; font-size: clamp(20px, 3.2vw, 32px); margin-top:6px;">
-    for a School
+    for a School in Italy
   </span>
 </h1>
-<p>A simple project to generate and print a meeting report (minutes) in PDF for a school institution.</p>
+<p>A simple project to generate and print a meeting report in PDF for a school institution.</p>
 <br>
 
 <img width="957" height="517" alt="Screenshot 2025-09-10 alle 08 08 28" src="https://github.com/user-attachments/assets/0059842c-49dd-4ed1-8d81-24fd71c9874b" />
